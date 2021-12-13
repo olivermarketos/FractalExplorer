@@ -10,6 +10,7 @@ import java.awt.image.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+
 public class FractalExplorer extends JFrame {
 
     static final int WIDTH= 600;
@@ -28,12 +29,20 @@ public class FractalExplorer extends JFrame {
     double topLeftY = DEFAULT_TOP_LEFT_Y;
     double topLeftX = DEFAULT_TOP_LEFT_X;
 
+// -------------------------------------------------------------------
     public FractalExplorer(){
         setInitialGUIProperties();
         addCanvas();
         updateFractal();
         this.setVisible(true);
     }
+
+// -------------------------------------------------------------------
+    /**
+	 * Updates the fractal by computing the number of iterations
+	 * for each point in the fractal and changing the color
+	 * based on that.
+	 **/
 
     public void updateFractal(){
 
@@ -52,6 +61,10 @@ public class FractalExplorer extends JFrame {
         canvas.repaint();
     }
 
+// -------------------------------------------------------------------
+    /** Returns a posterized color based off of the iteration count
+	    of a given point in the fractal **/
+    
     private int makeColor( int iterCount){
 
 		// int color = 0b011011100001100101101000; 
@@ -65,14 +78,16 @@ public class FractalExplorer extends JFrame {
 	        // return color | (mask << shiftMag);
     }
 
+// -------------------------------------------------------------------
     private double getXPos(double x){
         return x/zoomFactor + topLeftX;
     }
-
+// -------------------------------------------------------------------
     private double getYPos(double y){
         return y/zoomFactor - topLeftY;
     }
 
+// -------------------------------------------------------------------
     private int computeIterations(double c_r, double c_i){
 
             /*
@@ -93,8 +108,9 @@ public class FractalExplorer extends JFrame {
         
         int iterCount = 0;
 
-        // sqr_root(a^2 + b^2) <= 2
-        // (a^2 + b^2) <= 4
+        // Modulus (distance) formula:
+		// √(a² + b²) <= 2.0
+		// a² + b² <= 4.0
 
         while (z_r*z_r + z_i*z_i <=4.0){
             
@@ -115,6 +131,7 @@ public class FractalExplorer extends JFrame {
         return iterCount;
     }
 
+// -------------------------------------------------------------------
     private void addCanvas(){
         canvas = new Canvas();
         fractalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -123,6 +140,7 @@ public class FractalExplorer extends JFrame {
 
     }
 
+// -------------------------------------------------------------------
     public void setInitialGUIProperties(){
         this.setTitle("Fractal Explorer");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -132,18 +150,63 @@ public class FractalExplorer extends JFrame {
 
     }
 
-    public static void main(String[] args) {
-        new FractalExplorer();
+// -------------------------------------------------------------------
+    private void adjustZoom(double newX, double newY, double newZoomFactor){
+
+        topLeftX += newX/zoomFactor;
+        topLeftY -= newY/zoomFactor;
+
+        zoomFactor = newZoomFactor;
+
+        topLeftX -= (WIDTH/2)/ zoomFactor;
+        topLeftY += (HEIGHT/2)/ zoomFactor;
+
+        updateFractal();
     }
 
-    private class Canvas extends JPanel{
+// -------------------------------------------------------------------
+    private class Canvas extends JPanel implements MouseListener{
 
-        public Dimension getPreferredSize(){
+        public Canvas(){
+            addMouseListener(this);
+        }
+
+        @Override public Dimension getPreferredSize(){
             return new Dimension(WIDTH, HEIGHT);
         }
 
         public void paintComponent(Graphics drawingObj){
             drawingObj.drawImage(fractalImage, 0, 0, null);
         }
+
+        @Override public void mousePressed(MouseEvent mouse){
+
+            double x = (double) mouse.getX();
+            double y = (double) mouse.getY();
+
+            switch (mouse.getButton()){
+
+                // left
+                case MouseEvent.BUTTON1:
+                    adjustZoom(x,y, zoomFactor*2);
+                    break;
+                
+                // right
+                case MouseEvent.BUTTON3:
+                    adjustZoom(x,y, zoomFactor/2);
+                    break;
+            }
+        }
+
+        @Override public void mouseReleased(MouseEvent mouse){ }
+		@Override public void mouseClicked(MouseEvent mouse) { }
+		@Override public void mouseEntered(MouseEvent mouse) { }
+		@Override public void mouseExited (MouseEvent mouse) { }
+		
+    }
+
+// -------------------------------------------------------------------
+    public static void main(String[] args) {
+        new FractalExplorer();
     }
 }
