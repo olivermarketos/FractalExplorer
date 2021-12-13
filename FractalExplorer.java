@@ -15,8 +15,20 @@ public class FractalExplorer extends JFrame {
     static final int WIDTH= 1000;
     static final int HEIGHT = 600;
 
+    Canvas canvas;
+    BufferedImage fractalImage;
+
     public FractalExplorer(){
         setInitialGUIProperties();
+        addCanvas();
+        this.setVisible(true);
+    }
+    private void addCanvas(){
+        canvas = new Canvas();
+        fractalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        canvas.setVisible(true);
+        this.add(canvas, BorderLayout.CENTER);
+
     }
 
     public void setInitialGUIProperties(){
@@ -25,14 +37,21 @@ public class FractalExplorer extends JFrame {
         this.setSize(WIDTH, HEIGHT);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
-        
+
     }
-
-
-
 
     public static void main(String[] args) {
         new FractalExplorer();
+    }
+
+    private class Canvas extends JPanel{
+
+        public Dimension getPreferredSize(){
+            return new Dimension(WIDTH, HEIGHT);
+        }
+
+        public void paintComponent(Graphics drawingObj){
+            drawingObj.drawImage(fractalImage, 0, 0, null);
+        }
     }
 }
