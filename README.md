@@ -1,5 +1,7 @@
 # Fractal Explorer
 
+Java app to explore mandelbrot sets
+
 ### Running Application
 
 Requirements: Java 1.7 or above
