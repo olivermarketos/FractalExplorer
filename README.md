@@ -1,6 +1,10 @@
 # Fractal Explorer
 
-Java app to explore mandelbrot sets
+Java app to explore mandelbrot sets.
+
+Zoom into the fractal with left mouse click and zoom out with right mouse click.
+
+Pan around fractal with W, A, S, D keys.
 
 ### Running Application
 
