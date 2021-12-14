@@ -4,7 +4,6 @@
  * @author Oliver Marketos, olivermarketos@gmail.com
  **/
 
-import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -33,6 +32,7 @@ public class FractalExplorer extends JFrame {
     public FractalExplorer(){
         setInitialGUIProperties();
         addCanvas();
+        canvas.addKeyStrokeEvents();
         updateFractal();
         this.setVisible(true);
     }
@@ -69,13 +69,13 @@ public class FractalExplorer extends JFrame {
 
 		// int color = 0b011011100001100101101000; 
 		// int mask  = 0b000000000000010101110111; 
-		// int shiftMag = iterCount / 13;
+        // int shiftMag = iterCount / 13;
 		
 		if (iterCount == MAX_ITER) 
 			return Color.BLACK.getRGB();
-	
-        return Color.BLUE.getRGB();
-	        // return color | (mask << shiftMag);
+
+        return Color.HSBtoRGB((float)iterCount/MAX_ITER, 0.5f, 1);
+	    // return color | (mask << shiftMag);
     }
 
 // -------------------------------------------------------------------
@@ -165,6 +165,30 @@ public class FractalExplorer extends JFrame {
     }
 
 // -------------------------------------------------------------------
+private void moveUp() {
+    double curHeight = HEIGHT / zoomFactor;
+    topLeftY += curHeight / 6;
+    updateFractal();
+} // moveUp
+// -------------------------------------------------------------------
+private void moveDown() {
+    double curHeight = HEIGHT / zoomFactor;
+    topLeftY -= curHeight / 6;
+    updateFractal();
+} // moveDown
+// -------------------------------------------------------------------
+private void moveLeft() {
+    double curWidth = WIDTH / zoomFactor;
+    topLeftX -= curWidth / 6;
+    updateFractal();
+} // moveLeft
+// -------------------------------------------------------------------
+private void moveRight() {
+    double curWidth = WIDTH / zoomFactor;
+    topLeftX += curWidth / 6;
+    updateFractal();
+} // moveRight
+// -------------------------------------------------------------------
     private class Canvas extends JPanel implements MouseListener{
 
         public Canvas(){
@@ -202,6 +226,46 @@ public class FractalExplorer extends JFrame {
 		@Override public void mouseClicked(MouseEvent mouse) { }
 		@Override public void mouseEntered(MouseEvent mouse) { }
 		@Override public void mouseExited (MouseEvent mouse) { }
+
+        public void addKeyStrokeEvents(){
+            KeyStroke w = KeyStroke.getKeyStroke(KeyEvent.VK_W, 0);
+            KeyStroke a = KeyStroke.getKeyStroke(KeyEvent.VK_A, 0);
+            KeyStroke s = KeyStroke.getKeyStroke(KeyEvent.VK_S, 0);
+            KeyStroke d = KeyStroke.getKeyStroke(KeyEvent.VK_D, 0);
+
+            Action wPressed = new AbstractAction(){
+                public void actionPerformed(ActionEvent e){
+                    moveUp();
+                }
+            }; 
+            Action aPressed = new AbstractAction(){
+                public void actionPerformed(ActionEvent e){
+                    moveLeft();
+                }
+            } ;
+            Action sPressed = new AbstractAction(){
+                public void actionPerformed(ActionEvent e){
+                    moveDown();
+                }
+            } ;
+            Action dPressed = new AbstractAction(){
+                public void actionPerformed(ActionEvent e){
+                    moveRight();
+                }
+            } ;
+
+			this.getInputMap().put( w, "w_key" );
+			this.getInputMap().put( a, "a_key" );
+			this.getInputMap().put( s, "s_key" );
+			this.getInputMap().put( d, "d_key" );
+			
+			this.getActionMap().put( "w_key", wPressed );
+			this.getActionMap().put( "a_key", aPressed );
+			this.getActionMap().put( "s_key", sPressed );
+			this.getActionMap().put( "d_key", dPressed );
+			
+
+        }
 		
     }
 
